@@ -42,7 +42,7 @@ pip install pandas numpy colorama
 1. **Clone the Repository**
 
    ```bash
-   git clone https://github.com/yourusername/volatility-calculator.git
+   git clone git@github.com:VVIMT/Exponentially_Weighted_Volatility_Calculator.git
    cd volatility-calculator
    ```
 
