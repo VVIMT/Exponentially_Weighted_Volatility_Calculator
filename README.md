@@ -1,3 +1,4 @@
+
 # **Crypto Trading Tools**
 
 This repository contains Python scripts for analyzing and simulating cryptocurrency trading strategies. The tools provided are:
@@ -12,6 +13,7 @@ This repository contains Python scripts for analyzing and simulating cryptocurre
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Data Preparation](#data-preparation)
+- [Sample CSV Structure](#sample-csv-structure)
 - [Scripts](#scripts)
   - [Exponentially Weighted Volatility Calculator](#exponentially-weighted-volatility-calculator)
     - [Usage](#usage-volatility-calculator)
@@ -33,11 +35,11 @@ This repository contains Python scripts for analyzing and simulating cryptocurre
 ### **Exponentially Weighted Volatility Calculator**
 
 - **User-Friendly Command-Line Interface**: Easily pass parameters such as data folder path, assets list, observation window, and timestamp granularity.
-- **CSV File Handling**: Reads multiple CSV files from a specified data folder, supporting files with headers and initial non-data lines.
+- **CSV File Handling**: Reads multiple CSV files from a specified data folder.
 - **Volatility Calculations**: Computes each asset's average exponentially weighted volatility and compares it with the combined assets' average exponentially weighted volatility.
 - **Timestamps Matching and Verification**: Ensures data covers the observation window and aligns timestamps when combining data.
 - **Efficient Computations**: Utilizes NumPy and pandas for optimized data manipulation and calculations.
-- **Python 3.12 Compatibility**: Fully compatible with Python 3.12.
+- **Python 3.6+ Compatibility**: Fully compatible with Python 3.6 and higher versions.
 
 ### **Portfolio Simulator**
 
@@ -51,7 +53,7 @@ This repository contains Python scripts for analyzing and simulating cryptocurre
 
 ## **Requirements**
 
-- **Python**: Version 3.6 or higher (fully compatible with Python 3.12).
+- **Python**: Version 3.6 or higher.
 - **Packages**:
   - `pandas`
   - `numpy`
@@ -72,8 +74,8 @@ pip install pandas numpy matplotlib colorama argparse
 1. **Clone the Repository**
 
    ```bash
-   git clone git@github.com:VVIMT/Exponentially_Weighted_Volatility_Calculator.git
-   cd Exponentially_Weighted_Volatility_Calculator
+    git clone git@github.com:VVIMT/Exponentially_Weighted_Volatility_Calculator.git
+    cd Exponentially_Weighted_Volatility_Calculator
    ```
 
 2. **Ensure the Directory Structure**
@@ -101,25 +103,36 @@ pip install pandas numpy matplotlib colorama argparse
 
 ## **Data Preparation**
 
-The scripts expect historical price data for each asset in CSV format. Each CSV file should contain the following:
+Both the `volatility_calculator.py` and `portfolio_simulator.py` scripts use the same CSV files located in the `data` directory. There is no need for separate data preparation for each script.
 
-- **Columns**:
-  - `unix` or `timestamp`: The timestamp of the data point. If using `unix`, timestamps should be in milliseconds.
-  - `close`: The closing price of the asset at that timestamp.
-- **Formatting**:
-  - The CSV should have a header row with column names.
-  - Timestamps should be properly formatted to be parsed by `pandas`.
-- **Data Consistency**:
-  - Ensure that the data for each asset covers the entire period needed for your simulations or calculations.
-  - All data files should have overlapping timestamps to be aligned correctly.
+Ensure that each asset's CSV file contains historical price data with the required columns.
 
-### **Sample CSV Structure**
+---
 
-| unix           | close     |
-| -------------- | --------- |
-| 1609459200000  | 29374.15  |
-| 1609459260000  | 29372.65  |
-| ...            | ...       |
+## **Sample CSV Structure**
+
+Below is a sample of the first few lines of a CSV file presented in ASCII table format:
+
+| Unix          | Date                 | Symbol   | Open      | High      | Low       | Close     | Volume BTC | Volume USDT     | tradecount |
+| ------------- | -------------------- | -------- | --------- | --------- | --------- | --------- | ---------- | --------------- | ---------- |
+| 1730591940000 | 2024-11-02 23:59:00  | BTCUSDT  | 69327.99  | 69376.13  | 69316.00  | 69374.74  | 95.58074   | 6629738.5253384 | 1039       |
+| 1730591880000 | 2024-11-02 23:58:00  | BTCUSDT  | 69296.00  | 69328.00  | 69286.92  | 69327.99  | 26.49626   | 1836430.7989713 | 1298       |
+| 1730591820000 | 2024-11-02 23:57:00  | BTCUSDT  | 69300.01  | 69302.00  | 69296.00  | 69296.00  | 4.01482    | 278229.5453751  | 433        |
+| 1730591760000 | 2024-11-02 23:56:00  | BTCUSDT  | 69306.01  | 69306.01  | 69300.00  | 69300.00  | 1.36238    | 94414.7744151   | 332        |
+| ...           | ...                  | ...      | ...       | ...       | ...       | ...       | ...        | ...             | ...        |
+
+**Explanation of the Columns**:
+
+- **Unix**: Unix timestamp in milliseconds.
+- **Date**: Corresponding human-readable date and time.
+- **Symbol**: The trading pair symbol.
+- **Open**: Opening price of the asset for the interval.
+- **High**: Highest price of the asset during the interval.
+- **Low**: Lowest price of the asset during the interval.
+- **Close**: Closing price of the asset for the interval.
+- **Volume BTC**: Volume traded in BTC during the interval.
+- **Volume USDT**: Volume traded in USDT during the interval.
+- **tradecount**: Number of trades executed during the interval.
 
 ---
 
@@ -138,17 +151,17 @@ python volatility_calculator.py --data_folder path_to_data_folder --assets asset
 #### **Parameters** <a name="parameters-volatility-calculator"></a>
 
 - `--data_folder`: (Optional) Path to the folder containing your CSV files. Default is `'data'`.
-- `--assets`: (Required) Comma-separated list of asset symbols corresponding to the CSV filenames without the `.csv` extension (e.g., `BTCUSDT,ETHUSDT,SOLUSDT`).
-- `--observation_window_minutes`: (Optional) Observation window in minutes. Default is `525600` minutes (1 year).
-- `--span`: (Optional) Span parameter for the Exponentially Weighted Moving (EWM) calculations. Default is `20`.
-- `--timestamp_granularity`: (Optional) Resampling frequency for timestamps. Default is `'1min'`. Accepts any pandas offset alias (e.g., `'5min'`, `'1H'`).
+- `--assets`: (Required) Comma-separated list of asset symbols corresponding to the CSV filenames without the `.csv` extension (e.g., `Binance_BTCUSDT_2024_minute,Binance_ETHUSDT_2024_minute`).
+- `--observation_window_minutes`: (Optional) Observation window in minutes (default: `525600` for 1 year).
+- `--span`: (Optional) Span parameter for the Exponentially Weighted Moving (EWM) calculations (default: `20`).
+- `--timestamp_granularity`: (Optional) Resampling frequency for timestamps (default: `'1min'`). Accepts any pandas offset alias (e.g., `'5min'`, `'1H'`).
 
 #### **Example** <a name="example-volatility-calculator"></a>
 
-Calculate the average exponentially weighted volatility for BTCUSDT, ETHUSDT, and SOLUSDT over the past year with 1-minute granularity:
+Calculate the average exponentially weighted volatility for multiple assets over the past year with 1-minute granularity:
 
 ```bash
-python volatility_calculator.py --data_folder data --assets BTCUSDT,ETHUSDT,SOLUSDT --observation_window_minutes 525600 --span 20 --timestamp_granularity 1min
+python volatility_calculator.py --data_folder data --assets Binance_BTCUSDT_2024_minute,Binance_ETHUSDT_2024_minute,Binance_SOLUSDT_2024_minute --observation_window_minutes 525600 --span 20 --timestamp_granularity 1min
 ```
 
 #### **Output** <a name="output-volatility-calculator"></a>
@@ -158,10 +171,10 @@ The script outputs the average exponentially weighted volatility for each asset 
 **Sample Output:**
 
 ```
-Average Exponentially Weighted Volatility of SOLUSDT: 0.0256
-Average Exponentially Weighted Volatility of ETHUSDT: 0.0312
-Average Exponentially Weighted Volatility of BTCUSDT: 0.0354
-Average Exponentially Weighted Volatility of Portfolio: 0.0307
+Average Exponentially Weighted Volatility of SOLUSDT: 2.5600%
+Average Exponentially Weighted Volatility of ETHUSDT: 3.1200%
+Average Exponentially Weighted Volatility of BTCUSDT: 3.5400%
+Average Exponentially Weighted Volatility of Portfolio: 3.0700%
 ```
 
 *Note: The values above are illustrative.*
@@ -189,7 +202,7 @@ python portfolio_simulator.py \
 #### **Command-Line Arguments** <a name="command-line-arguments-portfolio-simulator"></a>
 
 - `--data_folder`: Folder containing CSV files with historical data (default: `data`).
-- `--assets`: Comma-separated list of asset symbols corresponding to the CSV filenames without the `.csv` extension (e.g., `BTCUSDT,ETHUSDT`).
+- `--assets`: Comma-separated list of asset symbols corresponding to the CSV filenames without the `.csv` extension (e.g., `Binance_BTCUSDT_2024_minute,Binance_ETHUSDT_2024_minute`).
 - `--start_date`: Start date for the simulation in `YYYY-MM-DD` format.
 - `--end_date`: End date for the simulation in `YYYY-MM-DD` format.
 - `--rebalance_periods`: Comma-separated list of rebalancing periods (e.g., `1D,1W,1M`).
@@ -253,12 +266,13 @@ Total Fees Paid:         $121.28
 
 ## **Notes**
 
-- **Data Coverage Verification**: The scripts check if each asset has data within the required period. Assets without sufficient data are skipped.
+- **Data Coverage Verification**: Each script checks if each asset has data within the required period. Assets without sufficient data are skipped.
 - **Timestamp Alignment**: Resamples each asset's data to ensure consistent timestamps across assets.
 - **Error Handling**: Includes error handling for file reading and data processing, allowing the script to continue even if some assets encounter issues.
 - **Equal Weighting**: Both scripts assume equal weighting of the specified assets unless otherwise adjusted.
 - **Dependencies**: Ensure all required Python packages are installed.
 - **Trading Fees**: Adjust the `--trading_fee` parameter in the portfolio simulator to match realistic trading conditions for your scenario.
 - **Granularity**: The `--timestamp_granularity` should match the granularity of your data to avoid resampling issues.
+- **Data Sources**: The sample CSV data provided is sourced from [CryptoDataDownload](https://www.cryptodatadownload.com). Ensure compliance with their terms of use when utilizing their data.
+- **File Paths and Names**: Ensure that the asset symbols provided in the command-line arguments match the filenames in your `data` folder (without the `.csv` extension).
 
----
