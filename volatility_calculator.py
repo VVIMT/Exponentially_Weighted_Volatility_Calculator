@@ -4,24 +4,10 @@ import os
 import sys
 import argparse
 from colorama import init, Fore, Style
+from utils.data_reader import read_historical_data
 
 # Initialize colorama
 init(autoreset=True)
-
-def read_historical_data(symbol, data_folder):
-    file_path = os.path.join(data_folder, f"{symbol}.csv")
-    try:
-        data = pd.read_csv(file_path, skiprows=1)  # Skip the first line (URL)
-        # Handle the header in the second line if necessary
-        if data.columns[0] != 'unix':
-            data = pd.read_csv(file_path, skiprows=1, header=0)
-        data['timestamp'] = pd.to_datetime(data['unix'], unit='ms')
-        data.set_index('timestamp', inplace=True)
-        data = data.sort_index()
-        return data
-    except Exception as e:
-        print(f"Error reading {file_path}: {e}")
-        return None
 
 def calculate_returns(data):
     data['returns'] = np.log(data['close'] / data['close'].shift(1))
@@ -131,12 +117,13 @@ def main():
     individual_volatilities['Portfolio'] = portfolio_avg_volatility
     # Sort volatilities from lowest to highest
     sorted_volatilities = sorted(individual_volatilities.items(), key=lambda x: x[1])
-    # Display the sorted volatilities
+    # Display the sorted volatilities in percentage
     for asset, vol in sorted_volatilities:
+        vol_percentage = vol * 100  # Convert to percentage
         if asset == 'Portfolio':
-            print(Fore.GREEN + f'Average Exponentially Weighted Volatility of {asset}: {vol}')
+            print(Fore.GREEN + f'Average Exponentially Weighted Volatility of {asset}: {vol_percentage:.4f}%')
         else:
-            print(f'Average Exponentially Weighted Volatility of {asset}: {vol}')
+            print(f'Average Exponentially Weighted Volatility of {asset}: {vol_percentage:.4f}%')
 
 if __name__ == "__main__":
     main()
